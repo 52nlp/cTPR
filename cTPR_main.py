@@ -2,32 +2,33 @@ import psycopg2
 import cTPR
 import os, sys
 
-TOPIC_ID = 7
-WINDOW_SIZE = 4
-DAMPING_FACTOR = 0.3
-ITERATION = 5
-TOP_M = 10
-IMAGE_LIMIT = 30
-DBPATH = "dbname=image_tagging host=localhost user=postgres"
+TOPIC_ID = 715 #アノテーションの対象となるトピックを指定
+WINDOW_SIZE = 4 #ワードグラフを作成する際に使うウィンドウのサイズを指定
+DAMPING_FACTOR = 0.1 #cTPRの計算式で使うdamping factor（他トピックからのジャンブ率）を指定
+ITERATION = 100 #cTPRアルゴリズムのイテレーション数を指定
+TOP_M = 10 #最終的にアノテーションに使うキーワードの数を指定
+IMAGE_LIMIT = 39 #結果として使う画像の枚数を指定
+DBPATH = "dbname=image_tagging host=localhost user=postgres" #計算に使うデータを格納しているDBを指定
 
 con = psycopg2.connect(DBPATH)
 concur = con.cursor()
 
-concur.execute('select tweet_id from text_with_label where topic_id = %s', (TOPIC_ID,))
-tweet_id_list = []
-for each_id in concur:
-	tweet_id_list.append(each_id[0])
-
-tweet_list = []
 print("fetching tweets.")
-for each_id in tweet_id_list:
-	concur.execute('select tweet from twipple where tweet_id=%s limit 1', (each_id,))
-	tweet_list.append(concur.fetchone()[0])
+
+concur.execute('''select b.tweet_id, b.tweet from text_with_label as a, twipple as b where  
+	a.tweet_id = b.tweet_id and a.topic_id = %s''', (TOPIC_ID,))
+
+tweet_id_list = []
+tweet_list = []
+for each_tweet in concur:
+	tweet_id_list.append(each_tweet[0])
+	tweet_list.append(each_tweet[1])
+
 print("done.")
 
-# cTPRクラスのmake_graphメソッドを活用してワードグラフを作成する
 cTPR_components = cTPR.cTPR(TOPIC_ID, WINDOW_SIZE, DAMPING_FACTOR, ITERATION, DBPATH)
 
+# cTPRクラスのmake_graphメソッドを活用してワードグラフを作成する
 print("making word graph.")
 cTPR_components.make_word_graph(tweet_list)
 print("done.")
@@ -66,7 +67,7 @@ for each_id in tweet_id_list[:IMAGE_LIMIT]:
 		f.write(tmp_image_data)
 		f.close()
 	
-# 結果表示用htmlのテンプレートを読み込み
+# 結果表示用ページの作成
 f = open('template.html', 'r')
 tmp_str = f.read()
 f.close()

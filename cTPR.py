@@ -1,6 +1,7 @@
 import psycopg2
 import MeCab
 import re
+import os
 
 class cTPR:
 	def __init__(self, topic_id, window_size, damping_factor, iteration, dbpath):
@@ -18,21 +19,27 @@ class cTPR:
 		# ウィンドウサイズを用いてワードグラフを作成する．
 		# 戻り値はグラフの構造が示された辞書．
 		
-		tagger = MeCab.Tagger('')
-		
 		for tweet in tweet_list:
 			tmp_word_list = []
 			
-			node = tagger.parseToNode(tweet)
+			cmd = 'echo ' + tweet + "| mecab"
+			proc = os.popen(cmd)
+			result = proc.read()
+			proc.close()
+
+			result = re.sub(r'\n', '\t', result)
+
+			taggered_list = result.split('\t')
+
 			# tweetをトークナイズ
-			# ノイズ語は-1と表現し，それ以外はnode.surfaceを格納
-			while node:
-				if node.surface is not '' and self.detect_noise(node.feature):
-					tmp_word_list.append(node.surface)
+			# ノイズ語は-1と表現し，それ以外は単語を格納
+			for i in range(len(taggered_list))[1::2]:
+				surface = taggered_list[i-1]
+				feature = taggered_list[i]
+				if self.detect_noise(feature):
+					tmp_word_list.append(surface)
 				else:
 					tmp_word_list.append(-1)
-				
-				node = node.next
 			
 			# 定められたwindow_sizeを用いてグラフを作成
 			for begin_pos in range(len(tmp_word_list)):
@@ -71,6 +78,9 @@ class cTPR:
 		
 		for i in range(self.iteration):
 			print("{0}/{1}\r".format(i+1, self.iteration), end="")
+			
+			converge_flag = True
+			tmp_score_dic = {}
 			for target_word in self.graph_dic.keys():
 				cursor.execute('select count, topic_id from word_count where word=%s', (target_word,))
 				res = cursor.fetchall()
@@ -83,6 +93,8 @@ class cTPR:
 					if each[1] is self.topic_id:
 						topic_count += each[0]
 				
+					assert topic_count <= all_count
+				
 				score_sum = 0
 				for counter_word, value in self.graph_dic.items():
 					if target_word in value.keys():
@@ -92,9 +104,25 @@ class cTPR:
 						
 						score_sum += (self.graph_dic[counter_word][target_word] / weight_sum) * \
 							self.score_dic[counter_word]
-						
-				self.score_dic[target_word] = self.damping_factor * score_sum + \
-					(1 - self.damping_factor) * (topic_count / all_count)
+				
+				tmp_score = 0
+				try:
+					tmp_score = self.damping_factor * score_sum + \
+							(1 - self.damping_factor) * (topic_count / all_count)
+				except:
+					print(target_word)
+				
+				if abs(tmp_score - self.score_dic[target_word]) > 0.001:
+					converge_flag = False
+
+				tmp_score_dic[target_word] = tmp_score
+			
+			if converge_flag:
+				print("the score of each vertex converged.", end="")
+				break
+			
+			else:
+				self.score_dic = tmp_score_dic
 		
 		print("")
 		

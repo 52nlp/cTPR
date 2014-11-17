@@ -22,7 +22,11 @@ class cTPR:
 		for tweet in tweet_list:
 			tmp_word_list = []
 			
-			cmd = 'echo ' + tweet + "| mecab"
+			f = open('tweet.txt', 'w')
+			f.write(tweet)
+			f.close()
+			
+			cmd = 'mecab tweet.txt'
 			proc = os.popen(cmd)
 			result = proc.read()
 			proc.close()

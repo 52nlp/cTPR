@@ -29,7 +29,11 @@ for each_topic_id in topic_id_list:
 	for each_tweet in tweets:
 		tweet = each_tweet[0]
 		
-		cmd = 'echo ' + tweet + "| mecab"
+		f = open('tweet.txt', 'w')
+		f.write(tweet)
+		f.close()
+		
+		cmd = 'mecab tweet.txt'
 		proc = os.popen(cmd)
 		result = proc.read()
 		proc.close()

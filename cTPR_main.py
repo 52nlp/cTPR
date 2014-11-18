@@ -2,11 +2,11 @@ import psycopg2
 import cTPR
 import os, sys
 
-TOPIC_ID = 81 #アノテーションの対象となるトピックを指定
-WINDOW_SIZE = 4 #ワードグラフを作成する際に使うウィンドウのサイズを指定
+TOPIC_ID = 11 #アノテーションの対象となるトピックを指定
+WINDOW_SIZE = 2 #ワードグラフを作成する際に使うウィンドウのサイズを指定
 DAMPING_FACTOR = 0.1 #cTPRの計算式で使うdamping factor（他トピックからのジャンブ率）を指定
 ITERATION = 100 #cTPRアルゴリズムのイテレーション数を指定
-TOP_M = 10 #最終的にアノテーションに使うキーワードの数を指定
+TOP_M = 20 #最終的にアノテーションに使うキーワードの数を指定
 IMAGE_LIMIT = 30 #結果として使う画像の枚数を指定
 DBPATH = "dbname=image_tagging host=localhost user=postgres" #計算に使うデータを格納しているDBを指定
 
@@ -15,14 +15,12 @@ concur = con.cursor()
 
 print("fetching tweets.")
 
-concur.execute('''select b.tweet_id, b.tweet from text_with_label as a, twipple as b where  
+concur.execute('''select b.tweet from text_with_label as a, twipple as b where  
 	a.tweet_id = b.tweet_id and a.topic_id = %s''', (TOPIC_ID,))
 
-tweet_id_list = []
 tweet_list = []
 for each_tweet in concur:
-	tweet_id_list.append(each_tweet[0])
-	tweet_list.append(each_tweet[1])
+	tweet_list.append(each_tweet[0])
 
 print("done.")
 
@@ -46,26 +44,32 @@ for each in top_res:
 
 
 # 画像へアノテーションした結果を出力
+concur.execute("""select user_id from topic_distribution_on_users where topic_id=%s 
+		order by distribution desc limit 3""", (TOPIC_ID,))
+result = concur.fetchall()
+tweet_id_list = []
 image_dic = {}
-for each_id in tweet_id_list[:IMAGE_LIMIT]:
-	concur.execute("select id, tweet, image from twipple where tweet_id = %s limit 1", (each_id,))
-	tmp_info = concur.fetchone()
-	tmp_image_id = tmp_info[0]
-	tmp_tweet = tmp_info[1]
-	tmp_image_data = tmp_info[2]
+for each_id in list(map(lambda x: x[0], result)):
+	concur.execute("""select distinct on (b.tweet) b.id, b.tweet, b.image 
+			from text_with_label as a, twipple as b
+			where a.tweet_id=b.tweet_id and a.user_id=b.user_id and b.user_id=%s and 
+			a.topic_id=%s""", (each_id, TOPIC_ID))
 
-	image_dic[tmp_image_id] = {"tweet":"", "keyword":[]}
+	for tmp_info in concur:
+		tmp_image_id = tmp_info[0]
+		tmp_tweet = tmp_info[1]
+		tmp_image_data = tmp_info[2]
 
-	for each_keyword in sorted(top_res, key=lambda x: x[1], reverse=True):
-		image_dic[tmp_image_id]["keyword"].append((each_keyword[0], each_keyword[1]))
+		image_dic[tmp_image_id] = {"tweet":tmp_tweet, "keyword":[]}
 
-	image_dic[tmp_image_id]["tweet"] = tmp_tweet
+		for each_keyword in sorted(top_res, key=lambda x: x[1], reverse=True):
+			image_dic[tmp_image_id]["keyword"].append((each_keyword[0], each_keyword[1]))
 
-	file_path = "./image/{0}.jpg".format(tmp_image_id)
-	if not os.path.isfile(file_path):
-		f = open(file_path, 'bw')
-		f.write(tmp_image_data)
-		f.close()
+		file_path = "./image/{0}.jpg".format(tmp_image_id)
+		if not os.path.isfile(file_path):
+			f = open(file_path, 'bw')
+			f.write(tmp_image_data)
+			f.close()
 	
 # 結果表示用ページの作成
 f = open('template.html', 'r')

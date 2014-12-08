@@ -5,9 +5,9 @@ import os, sys, re
 WINDOW_SIZE = 3 #ワードグラフを作成する際に使うウィンドウのサイズを指定
 DAMPING_FACTOR = 0.1 #cTPRの計算式で使うdamping factor（他トピックからのジャンブ率）を指定
 ITERATION = 100 #cTPRアルゴリズムのイテレーション数を指定
-TOP_M = 10 #最終的にアノテーションに使うキーワードの数を指定
+TOP_M = 20 #アノテーションに使うキーワードの数を指定
 IMAGE_LIMIT = 30 #結果として使う画像の枚数を指定
-USER_COUNT = 5 #トピック形成に貢献しているユーザを上位何名まで考慮するか（ワードグラフにも関係）
+USER_COUNT = 10 #トピック形成に貢献しているユーザを上位何名まで考慮するか（ワードグラフにも関係）
 DBPATH = "dbname=image_tagging host=localhost user=postgres" #計算に使うデータを格納しているDBを指定
 
 con = psycopg2.connect(DBPATH)

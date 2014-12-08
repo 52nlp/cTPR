@@ -45,6 +45,8 @@ for i in range(len(tweet_id_list)):
 
     con.commit()
 
+print()
+
 concur.close()
 con.close()
 

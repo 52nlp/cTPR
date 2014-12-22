@@ -8,6 +8,9 @@ DBPATH = "dbname=image_tagging host=localhost user=postgres"
 con = psycopg2.connect(DBPATH)
 concur = con.cursor()
 
+concur.execute("delete from evaluate_exp_raw")
+con.commit()
+
 concur.execute("""select distinct a.tweet_id, a.tweet from twipple as a, 
   (select distinct tweet_id from evaluate_exp_lda) as b
   where a.tweet_id=b.tweet_id""")
@@ -36,7 +39,7 @@ for i in range(len(tweet_id_list)):
   for j in range(len(taggered_list))[1::2]:
     surface = taggered_list[j - 1]
     feature = taggered_list[j]
-    if cTPR.detect_noise(feature):
+    if cTPR.detect_noise(surface, feature):
       contain_list.append(surface)
 
   for each_contain_tag in contain_list:

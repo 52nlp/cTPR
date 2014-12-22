@@ -40,7 +40,7 @@ for each_topic_id in topic_id_list:
       surface = taggered_list[i-1]
       feature = taggered_list[i]
       try:
-        if cTPR.cTPR.detect_noise(feature):
+        if cTPR.cTPR.detect_noise(surface, feature):
           if not surface in word_count.keys():
             word_count[surface] = 1
           else:

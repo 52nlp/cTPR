@@ -128,7 +128,7 @@ class cTPR:
           f.write(target_word+"\n")
           f.close()
         
-        if abs(tmp_score - self.score_dic[target_word]) > 0.0001:
+        if abs(tmp_score - self.score_dic[target_word]) > 0.001:
           converge_flag = False
         
         tmp_score_dic[target_word] = tmp_score

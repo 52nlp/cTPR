@@ -30,21 +30,54 @@ class Parser():
     
     taggered_list = result.split('\t')
     
-    for i in range(len(taggered_list))[1::2]:
-      if i is len(taggered_list)-1:
-        break
-      
-      surface = taggered_list[i-1]
-      feature = taggered_list[i]
-      
-      self.raw_list.append(surface)
-      
-      if cTPR.cTPR.detect_noise(surface, feature):
-        if not surface in self.count_dic.keys():
-          self.parsed_list.append(surface)
-          self.count_dic[surface] = 1
+    pos = 1
+    while pos <= len(taggered_list)-1:
+      term = ""
+      while cTPR.cTPR.detect_noise(taggered_list[pos]):
+        term += taggered_list[pos-1]
+        
+        if pos < len(taggered_list)-1:
+          pos += 2
         else:
-          self.count_dic[surface] += 1
+          break
+      
+      if term != "":
+        if len(term) > 1:
+          self.parsed_list.append(term)
+          
+          if not term in self.count_dic.keys():
+            self.count_dic[term] = 1
+          else:
+            self.count_dic[term] += 1
+        else:
+          self.parsed_list.append(-1)
+        
+        self.raw_list.append(term)
+        
+        if pos is len(taggered_list)-1:
+          break
+      else:
+        self.parsed_list.append(-1)
+        
+        self.raw_list.append(taggered_list[pos-1])
+        
+        pos += 2
+    
+    #for i in range(len(taggered_list))[1::2]:
+    #  surface = taggered_list[i-1]
+    #  feature = taggered_list[i]
+    #  
+    #  self.raw_list.append(surface)
+    #  
+    #  if cTPR.cTPR.detect_noise(surface, feature):
+    #    self.parsed_list.append(surface)
+    #
+    #    if not surface in self.count_dic.keys():
+    #      self.count_dic[surface] = 1
+    #    else:
+    #      self.count_dic[surface] += 1
+    #  else:
+    #    self.parsed_list.append(-1)
 
 
   @staticmethod
@@ -54,6 +87,9 @@ class Parser():
     
     # URL除去
     tweet = re.sub(r"http[s]*://[a-zA-Z0-9./-_!*'();%s:@&=+$,%]+", '', tweet)
+    
+    # 記号除去
+    tweet = re.sub(r'!|\?|！|？', '', tweet)
     
     # 顔文字除去
     match_tweet    = '[0-9A-Za-zぁ-ヶ一-龠]'

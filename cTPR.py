@@ -2,6 +2,8 @@ import psycopg2
 import MeCab
 import re
 import os
+import parse_proc
+import copy
 
 class cTPR:
   def __init__(self, topic_id, window_size, damping_factor, iteration, dbpath):
@@ -19,31 +21,12 @@ class cTPR:
     # ウィンドウサイズを用いてワードグラフを作成する．
     # 戻り値はグラフの構造が示された辞書．
     
+    parser = parse_proc.Parser()
+    
     for tweet in tweet_list:
-      tmp_word_list = []
+      parser.parse(tweet)
       
-      f = open('tweet.txt', 'w')
-      f.write(tweet)
-      f.close()
-      
-      cmd = 'mecab tweet.txt'
-      proc = os.popen(cmd)
-      result = proc.read()
-      proc.close()
-      
-      result = re.sub(r'\n', '\t', result)
-      
-      taggered_list = result.split('\t')
-      
-      # tweetをトークナイズ
-      # ノイズ語は-1と表現し，それ以外は単語を格納
-      for i in range(len(taggered_list))[1::2]:
-        surface = taggered_list[i - 1]
-        feature = taggered_list[i]
-        if self.detect_noise(surface, feature):
-          tmp_word_list.append(surface)
-        else:
-          tmp_word_list.append(-1)
+      tmp_word_list = copy.deepcopy(parser.parsed_list)
       
       # 定められたwindow_sizeを用いてグラフを作成
       for begin_pos in range(len(tmp_word_list)):
@@ -171,34 +154,35 @@ class cTPR:
 
 
   @staticmethod
-  def detect_noise(surface, feature):
+  def detect_noise(feature):
     # ノイズと思われる単語を除去する．
     # MeCabによりParseした結果であるfeatureを
     # 探索することで検出する
-    if len(surface) <= 1:
-      return False
+    
+    #if len(surface) <= 1:
+    #  return False
     
     if '名詞' in feature:
-      if 'サ変接続' in feature:
-        return False
-      
-      if '名詞,固有名詞,組織,*,*,*,*' in feature:
-        return False
-      
+      #if 'サ変接続' in feature:
+      #  return False
+      #
+      #if '名詞,固有名詞,組織,*,*,*,*' in feature:
+      #  return False
+      #
       if '数' in feature:
         return False
-      
-      if '形容動詞' in feature:
-        return False
-      
-      if '副詞' in feature:
-        return False
-      
-      if '接尾' in feature:
-        return False
-      
-      if '接頭' in feature:
-        return False
+      #
+      #if '形容動詞' in feature:
+      #  return False
+      #
+      #if '副詞' in feature:
+      #  return False
+      #
+      #if '接尾' in feature:
+      #  return False
+      #
+      #if '接頭' in feature:
+      #  return False
       
       return True
     

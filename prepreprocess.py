@@ -23,10 +23,10 @@ users = [ x for x in map(lambda x: x[0], cursor.fetchall())]
 total_user_num = len(users)
 
 parser = parse_proc.Parser()
-count = 1
+counter = 1
 print("scanning each user's tweets")
 for each_user_id in users:
-  print("{0}/{1}\r".format(count, total_user_num), end="")
+  print("{0}/{1}\r".format(counter, total_user_num), end="")
 
   cursor.execute("""select distinct on (tweet) tweet_id, tweet from twipple 
     where user_id=%s and time between %s and %s""", (each_user_id, begin_time, end_time))
@@ -45,7 +45,7 @@ for each_user_id in users:
         
         con.commit()
   
-  count += 1
+  counter += 1
 
 cursor.close()
 con.close()

@@ -21,6 +21,9 @@ class cTPR:
     # ウィンドウサイズを用いてワードグラフを作成する．
     # 戻り値はグラフの構造が示された辞書．
     
+    con = psycopg2.connect(self.dbpath)
+    cursor = con.cursor()
+    
     parser = parse_proc.Parser()
     
     for tweet in tweet_list:
@@ -31,12 +34,28 @@ class cTPR:
       # 定められたwindow_sizeを用いてグラフを作成
       for begin_pos in range(len(tmp_word_list)):
         if tmp_word_list[begin_pos] is not -1:
-          pos_of_window = 1
           begin_word = tmp_word_list[begin_pos]
+          
+          cursor.execute("""select count(*) from preprocess where word=%s
+            """, (begin_word,))
+          
+          count = cursor.fetchone()[0]
+          if count is 0:
+            continue
+          
+          pos_of_window = 1
           for end_pos in range(begin_pos + 1, len(tmp_word_list)):
             if tmp_word_list[end_pos] is not -1:
-              # keyが始点となる単語，valueが終点となる単語をkeyに，valueに共起頻度を持つ
               end_word = tmp_word_list[end_pos]
+              
+              cursor.execute("""select count(*) from preprocess where word=%s
+                """, (end_word,))
+              
+              count = cursor.fetchone()[0]
+              if count is 0:
+                continue
+              
+              # keyが始点となる単語，valueが終点となる単語をkeyに，valueに共起頻度を持つ
               if not begin_word in self.graph_dic.keys():
                 self.graph_dic[begin_word] = {}
               
@@ -65,21 +84,17 @@ class cTPR:
     
     sum_dic = {}
     sum_prob = 0
-    for target_word in self.graph_dic.keys():
-      #cursor.execute('select count, topic_id from word_count where word=%s', (target_word,))
-      cursor.execute('''select a.count, b.topic_id from preprocess as a, text_with_label as b
-        where a.tweet_id=b.tweet_id and a.word=%s''', (target_word,))
-      res = cursor.fetchall()
+    for target_word in word_list:
+      cursor.execute('''select sum(count) from preprocess where word=%s''', (target_word,))
+      all_count = cursor.fetchone()[0]
       
-      all_count = 0
-      topic_count = 0
-      for each in res:
-        all_count += each[0]
-        
-        if each[1] is self.topic_id:
-          topic_count += each[0]
-        
-        assert topic_count <= all_count
+      cursor.execute('''select sum(a.count) from preprocess as a, text_with_label as b
+        where a.tweet_id=b.tweet_id and a.word=%s and b.topic_id=%s
+        ''', (target_word, self.topic_id))
+      topic_count = cursor.fetchone()[0]
+      
+      if not topic_count:
+        topic_count = 0
       
       sum_dic[target_word] = topic_count / all_count
       sum_prob += topic_count / all_count
@@ -92,7 +107,7 @@ class cTPR:
       
       converge_flag = True
       tmp_score_dic = {}
-      for target_word in self.graph_dic.keys():
+      for target_word in word_list:
         score_sum = 0
         for counter_word, value in self.graph_dic.items():
           if target_word in value.keys():
@@ -105,7 +120,8 @@ class cTPR:
         
         tmp_score = 0
         try:
-          tmp_score = self.damping_factor * score_sum + (1 - self.damping_factor) * sum_dic[target_word]
+          tmp_score = self.damping_factor * score_sum + \
+            (1 - self.damping_factor) * sum_dic[target_word]
         except:
           f = open("error_terms.txt", "a")
           f.write(target_word+"\n")

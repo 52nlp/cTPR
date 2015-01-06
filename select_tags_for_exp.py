@@ -20,27 +20,31 @@ for each_topic_id in topic_id_list:
     where a.tweet_id=b.tweet_id and b.topic_id=%s""", (each_topic_id,))
   tweet_id_list = [x for x in map(lambda y: y[0], cursor.fetchall())]
   
-  chosen_tag_lda = ""
-  chosen_tag_raw = ""
-  while chosen_tag_lda == chosen_tag_raw:
-    
-    chosen_tweet_id = random.choice(tweet_id_list)
-    
-    # Twitter-LDA
-    cursor.execute("select tag from evaluate_exp_lda where tweet_id=%s", (chosen_tweet_id,))
-    tag_list = [x for x in map(lambda y: y[0], cursor.fetchall())]
-    
-    chosen_tag_lda = random.choice(tag_list)
-    
-    
-    # 名詞そのまま
-    cursor.execute("select tag from evaluate_exp_raw where tweet_id=%s", (chosen_tweet_id,))
-    tag_list = [x for x in map(lambda y: y[0], cursor.fetchall())]
-    
-    chosen_tag_raw = random.choice(tag_list)
+  chosen_tweet_id = random.choice(tweet_id_list)
   
-  cursor.execute("""insert into evaluate_chosen_tags (tweet_id, lda_tag, raw_tag) 
-  values (%s, %s, %s)""", (chosen_tweet_id, chosen_tag_lda, chosen_tag_raw))
+  #chosen_tag_lda = ""
+  #chosen_tag_raw = ""
+  #while chosen_tag_lda == chosen_tag_raw:
+  #  
+  #  chosen_tweet_id = random.choice(tweet_id_list)
+  #  
+  #  # Twitter-LDA
+  #  cursor.execute("select tag from evaluate_exp_lda where tweet_id=%s", (chosen_tweet_id,))
+  #  tag_list = [x for x in map(lambda y: y[0], cursor.fetchall())]
+  #  
+  #  chosen_tag_lda = random.choice(tag_list)
+  #  
+  #  
+  #  # 名詞そのまま
+  #  cursor.execute("select tag from evaluate_exp_raw where tweet_id=%s", (chosen_tweet_id,))
+  #  tag_list = [x for x in map(lambda y: y[0], cursor.fetchall())]
+  #  
+  #  chosen_tag_raw = random.choice(tag_list)
+  # 
+  # cursor.execute("""insert into evaluate_chosen_tags (tweet_id, lda_tag, raw_tag) 
+  # values (%s, %s, %s)""", (chosen_tweet_id, chosen_tag_lda, chosen_tag_raw))
+  
+  cursor.execute("""insert into evaluate_chosen_tweet (tweet_id) values (%s)""", (chosen_tweet_id,))
   
   con.commit()
 

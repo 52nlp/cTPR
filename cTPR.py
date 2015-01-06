@@ -179,9 +179,9 @@ class cTPR:
     #  return False
     
     if '名詞' in feature:
-      #if 'サ変接続' in feature:
-      #  return False
-      #
+      if 'サ変接続' in feature:
+        return False
+      
       #if '名詞,固有名詞,組織,*,*,*,*' in feature:
       #  return False
       #

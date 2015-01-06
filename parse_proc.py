@@ -83,13 +83,17 @@ class Parser():
   @staticmethod
   def filter_tweet(tweet):
     # RT、ハッシュタグ記号の除去
-    tweet = re.sub(r'RT|rt|#', '', tweet)
+    tweet = re.sub(r'RT|rt|#', '　', tweet)
+    
+    # 半角スペースを全角スペースに変更
+    #（半角スペースで区切られた名詞が結合してしまうのを防ぐため）
+    tweet = re.sub(r' ', '　', tweet)
     
     # URL除去
-    tweet = re.sub(r"http[s]*://[a-zA-Z0-9./-_!*'();%s:@&=+$,%]+", '', tweet)
+    tweet = re.sub(r"http[s]*://[a-zA-Z0-9./-_!*'();%s:@&=+$,%]+", '　', tweet)
     
     # 記号除去
-    tweet = re.sub(r'!|\?|！|？', '', tweet)
+    tweet = re.sub(r'!|\?|！|？', '　', tweet)
     
     # 顔文字除去
     match_tweet    = '[0-9A-Za-zぁ-ヶ一-龠]'
@@ -102,15 +106,15 @@ class Parser():
     face          = '(%s!(%s:' + match_tweet + '|' + hw_kana + '){3,}).{3,}'
     face_char     = arround_face + open_branket + face + close_branket + arround_face
     
-    tweet = re.sub(r"%s" % face_char, '', tweet)
+    tweet = re.sub(r"%s" % face_char, '　', tweet)
     
     # カッコ記号を除去
-    tweet = re.sub(r"[()\[\]]", '', tweet)
+    tweet = re.sub(r"[()\[\]]", '　', tweet)
     
     # 笑い記号"w"の除去
-    tweet = re.sub(r"[wWｗW]{2,}", '', tweet)
+    tweet = re.sub(r"[wWｗW]{2,}", '　', tweet)
     
     # 意味のわからない数字の羅列を除去(6桁-8桁のもの)
-    tweet = re.sub(r"[0-9]{6,7}", '', tweet)
+    tweet = re.sub(r"[0-9]{6,7}", '　', tweet)
     
     return tweet

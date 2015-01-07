@@ -7,22 +7,22 @@ import datetime
 con = psycopg2.connect("dbname=image_tagging host=localhost user=postgres")
 cursor = con.cursor()
 
-cursor.execute("delete from evaluate_chosen_tweet")
+cursor.execute("delete from selected_tweets")
 con.commit()
 
-cursor.execute("select distinct tweet_id from text_with_label30")
-text_with_label30 = set(x for x in map(lambda y: y[0], cursor.fetchall()))
+cursor.execute("select distinct tweet_id from exp_lda30")
+exp_lda30 = set(x for x in map(lambda y: y[0], cursor.fetchall()))
 
-cursor.execute("select distinct tweet_id from text_with_label100")
-text_with_label100 = set(x for x in map(lambda y: y[0], cursor.fetchall()))
+cursor.execute("select distinct tweet_id from exp_lda100")
+exp_lda100 = set(x for x in map(lambda y: y[0], cursor.fetchall()))
 
-cursor.execute("select distinct tweet_id from text_with_label200")
-text_with_label200 = set(x for x in map(lambda y: y[0], cursor.fetchall()))
+cursor.execute("select distinct tweet_id from exp_lda200")
+exp_lda200 = set(x for x in map(lambda y: y[0], cursor.fetchall()))
 
-cursor.execute("select distinct tweet_id from text_with_label500")
-text_with_label500 = set(x for x in map(lambda y: y[0], cursor.fetchall()))
+cursor.execute("select distinct tweet_id from exp_lda500")
+exp_lda500 = set(x for x in map(lambda y: y[0], cursor.fetchall()))
 
-intersection = text_with_label30 & text_with_label100 & text_with_label200 & text_with_label500
+intersection = exp_lda30 & exp_lda100 & exp_lda200 & exp_lda500
 
 for tweet_id in intersection:
   cursor.execute('''insert into selected_tweets (tweet_id) values (%s)''', (tweet_id,))

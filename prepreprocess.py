@@ -16,7 +16,7 @@ begin_time = datetime.datetime(year=2014, month=12, day=11)
 end_time = datetime.datetime(year=2014, month=12, day=18)
 
 cursor.execute("""select user_id from (select user_id, count(*) as num from 
-  (select distinct on (tweet) user_id from twipple where time between %s and %s) as a 
+  (select distinct on (tweet_id) user_id from twipple where time between %s and %s) as a 
   group by user_id) as b where num > 7""", (begin_time, end_time))
 
 users = [ x for x in map(lambda x: x[0], cursor.fetchall())]
@@ -28,7 +28,7 @@ print("scanning each user's tweets")
 for each_user_id in users:
   print("{0}/{1}\r".format(counter, total_user_num), end="")
 
-  cursor.execute("""select distinct on (tweet) tweet_id, tweet from twipple 
+  cursor.execute("""select distinct on (tweet_id) tweet_id, tweet from twipple 
     where user_id=%s and time between %s and %s""", (each_user_id, begin_time, end_time))
   tweets = cursor.fetchall()
 

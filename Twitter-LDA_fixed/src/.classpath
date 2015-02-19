@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/shinjiro/Documents/Twitter-LDA/lib/jargs.jar"/>
+	<classpathentry kind="lib" path="/home/shinjiro/Documents/Twitter-LDA/lib/args4j-2.0.6.jar"/>
+	<classpathentry kind="lib" path="/home/shinjiro/Documents/Twitter-LDA/lib/TwitterTokenizer.jar"/>
+	<classpathentry kind="lib" path="/home/shinjiro/Documents/Twitter-LDA_fixed/lib/postgresql-9.3-1102.jdbc41.jar"/>
+	<classpathentry kind="lib" path="/home/shinjiro/Documents/Twitter-LDA_fixed/lib/cmecab-java-2.0.1/cmecab-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/shinjiro/Documents/Twitter-LDA_fixed/lib/cmecab-java-2.0.1/lib/bridj-0.6.1.jar"/>
+	<classpathentry kind="lib" path="/home/shinjiro/Documents/Twitter-LDA_fixed/lib/cmecab-java-2.0.1/lib/groovy-all-1.8.6.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

@@ -26,10 +26,6 @@ $ python3.3 select_tweet_for_exp.py
 ```
 $ python3.3 limit_tweet_for_exp.py
 ```
-1. 抽出した名詞に問題のある画像がないか検閲する
-```
-# Djangoサーバを起動して「/evaluate/censorship/」へアクセスする
-```
 
 ##評価手順
 1. evaluate_resultsテーブルから多数決をとることで正解データを作成してテーブルに保存

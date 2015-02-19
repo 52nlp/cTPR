@@ -15,8 +15,8 @@ $ python3.3 preprocess.py
 # (1)
 # EclipseからTwitterLDAmainを実行した後，以下のコマンドを実行
 # (2)
-$ psql -q -c 'create table <table name> as select * from text_with_label'
-$ psql -q -c 'create table <table name> as select * from exp_lda'
+$ psql -q -c 'create table <table name> as select * from text_with_label' image_tagging
+$ psql -q -c 'create table <table name> as select * from exp_lda' image_tagging
 # (3)
 $ python3.3 extract_exp_lda_images.py
 ```

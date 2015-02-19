@@ -3,26 +3,29 @@
 ```
 $ python3.3 prepreprocess.py
 ```
-1. preprocess.pyにより10 tweet以上に現れない単語，あるいは70%以上のtweetに現れる単語を除去する
+2. preprocess.pyにより10 tweet以上に現れない単語，あるいは70%以上のtweetに現れる単語を除去する
 ```
 $ python3.3 preprocess.py
 ```
-1. 以下の作業をトピック数30，100，200，500のそれぞれについて行う
- - Twitter-LDAによりトピックを抽出
+3. 以下の作業をトピック数30，100，200，500のそれぞれについて行う
+ - Twitter-LDAによりトピックを抽出(1)
+ - 抽出結果が別のトピック設定で上書きされるため，計算結果をトピックごとに別テーブルに保存(2)
+ - キーワードを抽出して画像へアノテーション(各トピックごとに計算）(3)
 ```
-# EclipseからTwitterLDAmainを実行
-```
- - 抽出結果を別テーブルに保存
- - キーワードを抽出して画像へアノテーション(各トピックごとに計算）
-```
+# (1)
+# EclipseからTwitterLDAmainを実行した後，以下のコマンドを実行
+# (2)
+$ psql -q -c 'create table <table name> as select * from text_with_label'
+$ psql -q -c 'create table <table name> as select * from exp_lda'
+# (3)
 $ python3.3 extract_exp_lda_images.py
 ```
  - 抽出結果を別テーブルに保存
-1. 各トピックごとにアノテーションした画像集合の重なり部分を抽出する
+4. 各トピックごとにアノテーションした画像集合の重なり部分を抽出する
 ```
 $ python3.3 select_tweet_for_exp.py
 ```
-1. 抽出した重なり部分から全名詞数が一定数以下のtweetをM個取り出す
+5. 抽出した重なり部分から全名詞数が一定数以下のtweetをM個取り出す
 ```
 $ python3.3 limit_tweet_for_exp.py
 ```
@@ -32,7 +35,7 @@ $ python3.3 limit_tweet_for_exp.py
 ```
 $ python3.3 make_answer.py
 ```
-1. 提案手法がアノテーションした各単語の◯，×を確かめる
+2. 提案手法がアノテーションした各単語の◯，×を確かめる
 ```
 $ python3.3 calc_final_result.py
 ```
@@ -41,18 +44,18 @@ $ python3.3 calc_final_result.py
  - ◯の含有率の平均
  - 全画像中の◯と×それぞれの割合
  - 各画像についてどれだけの×が残っているかの割合の平均
-1. 元データの各画像がもつノイズ数の分布を算出
+3. 元データの各画像がもつノイズ数の分布を算出
 ```
 $ python3.3 make_histgram.py
 ```
-1. 正解データについて，全ての名詞をそのままアノテーションしたときの以下のデータを計算する(calc_naive_result.pyを利用)
+4. 正解データについて，全ての名詞をそのままアノテーションしたときの以下のデータを計算する(calc_naive_result.pyを利用)
  - アノテーション精度
  - ノイズ除去精度
  - 正解データを含む画像の割合
 ```
 $ python3.3 calc_naive_result.py
 ```
-1. 名詞をそのままアノテーションしたときのカバー率を計算する
+5. 名詞をそのままアノテーションしたときのカバー率を計算する
  - 100%（名詞がついてるものしかデータセットに用いていないため）
 
 

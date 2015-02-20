@@ -39,20 +39,16 @@ $ python3.3 select_tweet_for_exp.py
 $ python3.3 limit_tweet_for_exp.py
 ```
 
-##評価手順
+##評価手順（上から下に実行）
 + evaluate_resultsテーブルから多数決をとることで正解データを作成してテーブルに保存
 ```
 $ python3.3 make_answer.py
 ```
 + 提案手法がアノテーションした各単語の◯，×を確かめる
+ - <topic number>にはトピック数を入力（30，100，200，500のどれか）
 ```
-$ python3.3 calc_final_result.py
+$ python3.3 calc_final_result.py <topic number>
 ```
- - ◯だけの画像の割合
- - ×だけの画像の割合
- - ◯の含有率の平均
- - 全画像中の◯と×それぞれの割合
- - 各画像についてどれだけの×が残っているかの割合の平均
 + 元データの各画像がもつノイズ数の分布を算出
 ```
 $ python3.3 make_histgram.py

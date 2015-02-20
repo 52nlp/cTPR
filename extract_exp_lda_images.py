@@ -34,7 +34,7 @@ for each_topic_id in topic_id_list:
 
   tweet_list = []
   for each_user_id in target_user:
-    concur.execute('''select distinct b.tweet from text_with_label as a, twipple as b 
+    concur.execute('''select distinct b.tweet from text_with_label as a, origin_dataset as b 
       where a.tweet_id = b.tweet_id and a.topic_id=%s and a.user_id=%s''', (each_topic_id, each_user_id))
     
     results = concur.fetchall()

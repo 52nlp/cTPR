@@ -1,3 +1,12 @@
+#必要な環境
++ Python3系
++ Python3系の追加パッケージ
+ - psycopg2(PostgreSQLをPython3系から使うため)
++ PostgreSQL
++ Javaの実行環境(JRE7)
++ MeCab
++ Unix環境
+
 #実験手順
 1. prepreprocess.pyにより実験対象とする期限の限定と各tweetのフィルタリング（8 tweet以上しているユーザのtweetでなおかつ条件に合った単語が3つ以上含まれているtweet）を行う
 ```

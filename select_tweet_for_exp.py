@@ -35,7 +35,7 @@ for each_tweet_id in intersection:
   i += 1
   
   # NGワードがtweet内にあるか検閲
-  concur.execute('''select distinct tweet from twipple where tweet_id=%s''', (each_tweet_id,))
+  concur.execute('''select distinct tweet from origin_dataset where tweet_id=%s''', (each_tweet_id,))
   tweet = concur.fetchone()[0]
   
   ng_flag = False

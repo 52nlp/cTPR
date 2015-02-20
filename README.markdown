@@ -45,9 +45,9 @@ $ python3.3 limit_tweet_for_exp.py
 $ python3.3 make_answer.py
 ```
 + 提案手法がアノテーションした各単語の◯，×を確かめる
- - <topic number>にはトピック数を入力（30，100，200，500のどれか）
+ - TOPIC_NUMBERにはトピック数を入力（30，100，200，500のどれか）
 ```
-$ python3.3 calc_final_result.py <topic number>
+$ python3.3 calc_final_result.py TOPIC_NUMBER
 ```
 + 元データの各画像がもつノイズ数の分布を算出
 ```

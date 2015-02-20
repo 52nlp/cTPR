@@ -1,5 +1,4 @@
 import psycopg2
-import MeCab
 import re
 import os
 import parse_proc

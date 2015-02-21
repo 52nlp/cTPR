@@ -30,7 +30,6 @@ $ psql -q -c 'create table exp_lda<topic number> as select * from exp_lda' image
 # (3)
 $ python3.3 extract_exp_lda_images.py
 ```
- - 抽出結果を別テーブルに保存
 + 各トピックごとにアノテーションした画像集合の重なり部分を抽出する
 ```
 $ python3.3 select_tweet_for_exp.py

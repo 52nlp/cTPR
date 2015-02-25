@@ -1,3 +1,6 @@
+# データセットの２段階目の前処理を実行する．
+# 10tweet以上に現れる名詞を70%以下のtweetに現れる名詞のみを抽出する．
+
 import psycopg2
 import cTPR
 import os, sys
@@ -38,7 +41,7 @@ for i in range(len(tweet_id_list)):
     count = each_word[1]
     
     concur.execute("""select count(*) from (select distinct tweet_id from prepreprocess 
-      where tweet_id<>%s and word=%s) as a""", (each_tweet_id, word))
+      where and word=%s) as a""", (word,))
     
     appear_num = concur.fetchone()[0]
     

@@ -1,9 +1,14 @@
+# データセットの前処理を実行する．
+# 8tweet以上しているユーザの投稿したtweetで，尚かつあらゆる品詞を計上して
+# 3単語以上を含むtweetのみ抽出．
+
 import psycopg2
 import cTPR
 import os, sys
 import parse_proc
 import datetime
 
+# DBに接続
 DBPATH = "dbname=image_tagging host=localhost user=postgres"
 
 con = psycopg2.connect(DBPATH)
@@ -12,6 +17,7 @@ cursor = con.cursor()
 cursor.execute("delete from prepreprocess")
 con.commit()
 
+# 指定期日のtweetのうち8tweet以上しているユーザによるtweetのみを抽出
 begin_time = datetime.datetime(year=2014, month=12, day=11)
 end_time = datetime.datetime(year=2014, month=12, day=18)
 
@@ -25,6 +31,8 @@ total_user_num = len(users)
 parser = parse_proc.Parser()
 counter = 1
 print("scanning each user's tweets")
+
+# あらゆる品詞を計上して３単語以上が含まれているtweetのみをテーブル"preprocess"に登録
 for each_user_id in users:
   print("{0}/{1}\r".format(counter, total_user_num), end="")
 

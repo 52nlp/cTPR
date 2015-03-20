@@ -26,6 +26,9 @@ border = len(tweet_id_list) * 0.7
 print("border is {0}".format(border))
 
 print("scanning each word")
+
+# 各tweetについて，10tweet以上に現れて，かつ70%以下のtweetにのみ現れているかどうかを調査．
+# 合致するものは"preprocess"テーブルに登録．
 for i in range(len(tweet_id_list)):
   print("{0}/{1}\r".format(i+1, len(tweet_id_list)), end="")
 
@@ -41,7 +44,7 @@ for i in range(len(tweet_id_list)):
     count = each_word[1]
     
     concur.execute("""select count(*) from (select distinct tweet_id from prepreprocess 
-      where and word=%s) as a""", (word,))
+      where word=%s) as a""", (word,))
     
     appear_num = concur.fetchone()[0]
     

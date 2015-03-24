@@ -49,7 +49,6 @@ $ python3.3 make_answer.py
  - TOPIC_NUMBERにはトピック数を入力（30，100，200，500のどれか）
 ```
 $ python3.3 calc_final_result.py TOPIC_NUMBER
- - TOPIC_NUMBERにはトピック数（30, 100, 200, 500）を設定
 ```
 + 元データの各画像がもつノイズ数の分布を算出
 ```

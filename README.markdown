@@ -49,6 +49,7 @@ $ python3.3 make_answer.py
  - TOPIC_NUMBERにはトピック数を入力（30，100，200，500のどれか）
 ```
 $ python3.3 calc_final_result.py TOPIC_NUMBER
+ - TOPIC_NUMBERにはトピック数（30, 100, 200, 500）を設定
 ```
 + 元データの各画像がもつノイズ数の分布を算出
 ```
@@ -63,5 +64,29 @@ $ python3.3 calc_naive_result.py
 ```
 + 名詞をそのままアノテーションしたときのカバー率を計算する
  - 100%（名詞がついてるものしかデータセットに用いていないため）
-
-
++ 素のLDAを使った実験のために，gensimを利用してコーパスを作成する
+```
+$ python3.3 make_corpus_for_lda.py
+```
++ 素のLDAを使ったアノテーションを行う
+```
+$ python3.3 annotate_with_lda.py
+```
++ 素のLDAのトピック数を30～500まで設定したアノテーション結果との積集合をもとにしたときの実験結果を算出
+ - TOPIC_NUMBERにはトピック数（30, 100, 200, 500）を設定
+ - 計算結果は「results_of_raw_lda.markdwon」に記録済
+```
+# 提案手法の結果を算出
+$ python3.3 calc_final_result_with_rawlda.py TOPIC_NUMBER
+# 素のLDAの結果を算出
+$ python3.3 calc_raw_result.py TOPIC_NUMBER
+```
++ 素のLDAのトピック数を200のみ考慮したアノテーション結果との積集合をもとにしたときの実験結果を算出
+ - TOPIC_NUMBERにはトピック数（30, 100, 200, 500）を設定
+ - 計算結果は「results_of_raw_lda_200_limited.markdown」に記録済
+```
+# 提案手法の結果を算出
+$ python3.3 calc_final_result_200_limited.py TOPIC_NUMBER
+# 素のLDAの結果を算出
+$ python3.3 calc_raw_result_200_limited.py 200
+```

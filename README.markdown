@@ -2,6 +2,7 @@
 + Python3系
 + Python3系の追加パッケージ
  - psycopg2(PostgreSQLをPython3系から使うため)
+ - gensim(LDAを使うため)
 + PostgreSQL
 + Javaの実行環境(JRE7)
 + MeCab
